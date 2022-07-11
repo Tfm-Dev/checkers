@@ -8,6 +8,7 @@ typedef struct {
 
 Position toPosition(int row, int column);
 Position fromPlayerPosition(char row, char column);
+char* toPlayerPosition(int row, int column);
 int validPlayerPosition(char row, char column);
 int validPosition(int row, int column);
 

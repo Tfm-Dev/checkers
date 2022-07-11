@@ -18,6 +18,13 @@ Position fromPlayerPosition(char row, char column) {
     return position;
 }
 
+char* toPlayerPosition(int row, int column) {
+    char* playerPosition = (char *) calloc(2, (2 * sizeof(char)));
+    *(playerPosition + 0) = ('a' + column);
+    *(playerPosition + 1) = (8 - row) + '0';
+    return playerPosition;
+}
+
 int validPlayerPosition(char row, char column) {
     if (atoi(&row) > 8 || atoi(&row) < 1) return 0;
     if (column > 104 || column < 97) return 0;

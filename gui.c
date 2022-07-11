@@ -41,8 +41,8 @@ void menu(int* choise) {
 void printState(Game gameState, char* choise) {
     clear();
     printBoard(gameState.board);
-    printf("Turn: \n");
-    printf("Current Player: \n");
+    printf("Turn: %d\n", gameState.stage);
+    printf("Current Player: %c\n", gameState.currentPlayer);
     printf("Choise: ");
     scanf_s("%s", choise);
     fflush(stdin);
@@ -136,5 +136,11 @@ void printMove(Game game, Move* move, int countMove) {
         printf("\n");
     }
     printf("  a b c d e f g h\n");
+    printf("Possible moves: [");
+    for (int i = 0; i < countMove; i++) {
+        printf("%s", toPlayerPosition(move[i].to.row, move[i].to.column));
+        if((i+1) < countMove) printf(", ");
+    }
+    printf("]\n");
     system("pause");
 }

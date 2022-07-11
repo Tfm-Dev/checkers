@@ -39,7 +39,7 @@ Board newBoard() {
     return *board;
 }
 
-void possibleMoves(Board board, Position position, Move** move, int countMove) {
+int possibleMoves(Board board, Position position, Move** move, int countMove) {
     Move try = { position, position };
     if (board.board[position.row][position.column].type != 0) {
         if (board.board[position.row][position.column].color == 'B') {
@@ -49,15 +49,14 @@ void possibleMoves(Board board, Position position, Move** move, int countMove) {
                     *move = (Move*) realloc(*move, (countMove * sizeof(Move)));
                     *(*move + (countMove - 1)) = try;
                 }
-                try.to = position;
             }
+            try.to = position;
             if(validPosition(++try.to.row, ++try.to.column)) {
                 if (validMove(board, try)) { 
                     countMove++;
                     *move = (Move*) realloc(*move, (countMove * sizeof(Move)));
                     *(*move + (countMove - 1)) = try;
                 }
-                try.to = position;
             }
         } else {
             if(validPosition(--try.to.row, --try.to.column)) {
@@ -66,18 +65,19 @@ void possibleMoves(Board board, Position position, Move** move, int countMove) {
                     *move = (Move*) realloc(*move, (countMove * sizeof(Move)));
                     *(*move + (countMove - 1)) = try;
                 }
-                try.to = position;
             }
+            try.to = position;
             if(validPosition(--try.to.row, ++try.to.column)) {
                 if (validMove(board, try)) { 
                     countMove++;
                     *move = (Move*) realloc(*move, (countMove * sizeof(Move)));
                     *(*move + (countMove - 1)) = try;
                 }
-                try.to = position;
             }
         }
     }
+
+    return countMove;
 }
 
 int validMove(Board board, Move move) {

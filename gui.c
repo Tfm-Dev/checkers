@@ -5,6 +5,7 @@
 
 #define ANSI_COLOR_WHITE     "\033[97m"
 #define ANSI_COLOR_BLACK     "\033[30m"
+#define ANSI_BGCOLOR_GREEN   "\033[42m"
 #define ANSI_BGCOLOR_GREY   "\033[100m"
 #define ANSI_COLOR_RESET   "\033[m"
 
@@ -52,9 +53,9 @@ void printBoard(Board board) {
     for(int i = 0; i < 8; i++) {
         printf("%d|", 8-i);
         for (int j = 0; j < 8; j++) {
-            if (i % 2 == 0 && j % 2 != 0) printf(ANSI_BGCOLOR_GREY ANSI_COLOR_BLACK);
+            if (i % 2 == 0 && j % 2 != 0) printf(ANSI_BGCOLOR_GREY);
                 else
-                    if (i % 2 != 0 && j % 2 == 0) printf(ANSI_BGCOLOR_GREY ANSI_COLOR_BLACK);
+                    if (i % 2 != 0 && j % 2 == 0) printf(ANSI_BGCOLOR_GREY);
             if (board.board[i][j].type) {
                 printf("\033[4m");
                 if (board.board[i][j].color == 'B') printf(ANSI_COLOR_BLACK);
@@ -108,8 +109,32 @@ void printInvalidMove() {
     pause();
 }
 
-void printMove(Game game, Move* move) {
+void printMove(Game game, Move* move, int countMove) {
     clear();
-    printf("Size: %d\n", sizeof(Move));
+    printf("  _ _ _ _ _ _ _ _\n");
+    for(int i = 0; i < 8; i++) {
+        printf("%d|", 8-i);
+        for (int j = 0; j < 8; j++) {
+            for (int h = 0; h < countMove; h ++) {
+                if (i == move[h].to.row && j == move[h].to.column) {
+                    printf(ANSI_BGCOLOR_GREEN);
+                    break;
+                }
+                else if (i % 2 == 0 && j % 2 != 0) printf(ANSI_BGCOLOR_GREY);
+                else if (i % 2 != 0 && j % 2 == 0) printf(ANSI_BGCOLOR_GREY);
+            }
+            if (game.board.board[i][j].type) {
+                printf("\033[4m");
+                if (game.board.board[i][j].color == 'B') printf(ANSI_COLOR_BLACK);
+                else printf(ANSI_COLOR_WHITE);
+                printf("%c" ANSI_COLOR_RESET "|", game.board.board[i][j].type);
+            }
+            else {
+                printf("_" ANSI_COLOR_RESET "|");
+            } 
+        }
+        printf("\n");
+    }
+    printf("  a b c d e f g h\n");
     system("pause");
 }

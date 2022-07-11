@@ -89,3 +89,14 @@ int validMove(Board board, Move move) {
     }
     return 0;
 }
+
+int selectMove(Position position, Move* move, int countMove) {
+    int select = -1;
+    for (int i = 0; i < countMove; i++) {
+        if (move[i].to.row == position.row && move[i].to.column == position.column) {
+            select = i;
+            break;
+        }
+    }
+    return select;
+}

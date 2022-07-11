@@ -11,7 +11,8 @@ void load();
 void instruction();
 void winner(char winner);
 void draw();
+void printInvalidPosition();
+void printMove(Game game, Move* move, int countMove, char* choise);
 void printInvalidMove();
-void printMove(Game game, Move* move, int countMove);
 
 #endif

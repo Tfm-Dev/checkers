@@ -103,13 +103,13 @@ void draw() {
     printf("===================\n");
 }
 
-void printInvalidMove() {
+void printInvalidPosition() {
     clear();
     printf("Invalid Position!\nPlease, insert a valid position.");
     pause();
 }
 
-void printMove(Game game, Move* move, int countMove) {
+void printMove(Game game, Move* move, int countMove, char* choise) {
     clear();
     printf("  _ _ _ _ _ _ _ _\n");
     for(int i = 0; i < 8; i++) {
@@ -142,5 +142,13 @@ void printMove(Game game, Move* move, int countMove) {
         if((i+1) < countMove) printf(", ");
     }
     printf("]\n");
-    system("pause");
+    printf("Choise: ");
+    scanf("%s", choise);
+    fflush(stdin);
+}
+
+void printInvalidMove() {
+    clear();
+    printf("Invalid Moviment!\nPlease, insert a valid moviment.");
+    pause();
 }

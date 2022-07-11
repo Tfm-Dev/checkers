@@ -16,5 +16,6 @@ typedef struct {
 Board newBoard();
 int possibleMoves(Board board, Position position, Move** move, int countMove);
 int validMove(Board board, Move move);
+int selectMove(Position position, Move* move, int countMove);
 
 #endif

@@ -1,14 +1,19 @@
-#ifndef PIECE_H_
-#define PIECE_H_
+#ifndef _PIECE_H
+#define _PIECE_H
 
-#include "position.h"
-
+/**
+ * Piece
+ * ============================
+ * char type - Type of piece;
+ * char color - Color of Piece;
+ * ============================
+*/
 typedef struct {
     char type;
     char color;
-    Position position;
 }Piece;
 
-Piece newPiece(char type, char color, Position position);
+// Create Function
+Piece *newPiece(char type, char color);
 
 #endif

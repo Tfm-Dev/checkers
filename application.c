@@ -1,6 +1,7 @@
 #include "game.h"
 
+// Application Main
 int main(int argc, char const *argv[]) {
-    run();
+    init();
     return 0;
 }

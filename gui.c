@@ -1,28 +1,47 @@
 #include "gui.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef _STDIO_H
+    #include <stdio.h>
+#endif
 
-#define ANSI_COLOR_WHITE     "\033[97m"
-#define ANSI_COLOR_BLACK     "\033[30m"
-#define ANSI_BGCOLOR_GREEN   "\033[42m"
-#define ANSI_BGCOLOR_GREY   "\033[100m"
-#define ANSI_COLOR_RESET   "\033[m"
+#ifndef _STDLIB_H
+    #include <stdlib.h>
+#endif
 
+#ifndef _CONSTANTS_H
+    #include "constants.h"
+#endif
+
+/**
+ * clear console screen in Windows and Linux
+ * 
+ * @return void
+ * @see clean console screen
+*/
 void clear() {
 #ifdef _WIN32
     system("cls");
-#elif defined(__unix__)
+#elif defined(__UNIX__)
     printf("\033[H\033[J");
 #endif
 }
 
-void pause() {
-    getchar();
-}
+/**
+ * Displays the main menu and allows the player to make a choice
+ * The possible choices are:
+ * 1 - New Game;
+ * 2 - Load a game;
+ * 3 - Instructions;
+ * Any value - Exit application.
+ * 
+ * @return The choise of player.
+ * @see The main menu.
+*/
+int menu() {
+    int choise;
 
-void menu(int* choise) {
     clear();
+
     printf("===================\n");
     printf("|    Checkers     |\n");
     printf("|       in        |\n");
@@ -34,21 +53,65 @@ void menu(int* choise) {
     printf("|4- Exit          |\n");
     printf("===================\n");
     printf("Choise: ");
-    scanf_s("%d", choise);
-    fflush(stdin);
+
+    scanf("%d", &choise);
+    getchar();
+
+    return choise;
 }
 
-void printState(Game gameState, char* choise) {
+/**
+ * Display board with game state information.
+ * 
+ * @param Board          The board of game;
+ * @param turn           The current turn of game;
+ * @param currentPlayer  The current player of game.
+ * 
+ * @return void.
+ * @see The board, turn and current player.
+*/
+void printState(Board board, int turn, char currentPlayer, char *choise) {
     clear();
-    printBoard(gameState.board);
-    printf("Turn: %d\n", gameState.stage);
-    printf("Current Player: %c\n", gameState.currentPlayer);
+    printBoard(board, NULL);
+
+    printf("Turn: %d\n", turn);
+    printf("Current Player: %c\n", currentPlayer);
     printf("Choise: ");
-    scanf_s("%s", choise);
-    fflush(stdin);
+
+    scanf("%s", choise);
+    getchar();
 }
 
-void printBoard(Board board) {
+/**
+ * Display board with possible moves.
+ * 
+ * @param board   The board of game;
+ * @param move    The possible moves;
+ * @param choise  The choise of player.
+ * 
+ * @return void.
+ * @see The board with possible moves.
+*/
+void printMove(Board board, Move move, char *choise) {
+    clear();
+    printBoard(board, &move);
+
+    printf("Choise move: ");
+
+    scanf("%s", choise);
+    getchar();
+}
+
+/**
+ * Display board of game.
+ * 
+ * @param board  The board of game;
+ * @param move   Possible moves pointer.
+ * 
+ * @return void.
+ * @see The Board.
+*/
+void printBoard(Board board, Move *move) {
     printf("  _ _ _ _ _ _ _ _\n");
     for(int i = 0; i < 8; i++) {
         printf("%d|", 8-i);
@@ -56,13 +119,14 @@ void printBoard(Board board) {
             if (i % 2 == 0 && j % 2 != 0) printf(ANSI_BGCOLOR_GREY);
                 else
                     if (i % 2 != 0 && j % 2 == 0) printf(ANSI_BGCOLOR_GREY);
-            if (board.board[i][j].type) {
+            if (board.pieces[i][j] != NULL) {
                 printf("\033[4m");
-                if (board.board[i][j].color == 'B') printf(ANSI_COLOR_BLACK);
+                if (board.pieces[i][j]->color == 'B') printf(ANSI_COLOR_BLACK);
                 else printf(ANSI_COLOR_WHITE);
-                printf("%c" ANSI_COLOR_RESET "|", board.board[i][j].type);
+                printf("%c" ANSI_COLOR_RESET "|", board.pieces[i][j]->type);
             }
             else {
+                if (move && move->board[i][j]) printf(ANSI_BGCOLOR_GREEN);
                 printf("_" ANSI_COLOR_RESET "|");
             }
         }
@@ -71,84 +135,32 @@ void printBoard(Board board) {
     printf("  a b c d e f g h\n");
 }
 
-void load() {
-
-}
-
-void instruction() {
-    printf("===================\n");
-    printf("|    Checkers     |\n");
-    printf("|       in        |\n");
-    printf("|       C         |\n");
-    printf("===================\n");
-}
-
+/**
+ * Display player winner game.
+ * 
+ * @param winner The player winner.
+ * 
+ * @return void.
+ * @see winner.
+*/
 void winner(char winner) {
     printf("===================\n");
     printf("|                 |\n");
-
-    if(winner == 'w') printf("|      White      |\n");
-    else printf("|      Black      |\n");
-
-    printf("|      Winner     |\n");
+    winner == 'w' ? printf("|    White Win    |\n") : printf("|    Black Win    |\n");
     printf("|                 |\n");
     printf("===================\n");
 }
 
+/**
+ * Display draw game.
+ * 
+ * @return void.
+ * @see draw.
+*/
 void draw() {
     printf("===================\n");
     printf("|                 |\n");
     printf("|      Draw       |\n");
     printf("|                 |\n");
     printf("===================\n");
-}
-
-void printInvalidPosition() {
-    clear();
-    printf("Invalid Position!\nPlease, insert a valid position.");
-    pause();
-}
-
-void printMove(Game game, Move* move, int countMove, char* choise) {
-    clear();
-    printf("  _ _ _ _ _ _ _ _\n");
-    for(int i = 0; i < 8; i++) {
-        printf("%d|", 8-i);
-        for (int j = 0; j < 8; j++) {
-            for (int h = 0; h < countMove; h ++) {
-                if (i == move[h].to.row && j == move[h].to.column) {
-                    printf(ANSI_BGCOLOR_GREEN);
-                    break;
-                }
-                else if (i % 2 == 0 && j % 2 != 0) printf(ANSI_BGCOLOR_GREY);
-                else if (i % 2 != 0 && j % 2 == 0) printf(ANSI_BGCOLOR_GREY);
-            }
-            if (game.board.board[i][j].type) {
-                printf("\033[4m");
-                if (game.board.board[i][j].color == 'B') printf(ANSI_COLOR_BLACK);
-                else printf(ANSI_COLOR_WHITE);
-                printf("%c" ANSI_COLOR_RESET "|", game.board.board[i][j].type);
-            }
-            else {
-                printf("_" ANSI_COLOR_RESET "|");
-            } 
-        }
-        printf("\n");
-    }
-    printf("  a b c d e f g h\n");
-    printf("Possible moves: [");
-    for (int i = 0; i < countMove; i++) {
-        printf("%s", toPlayerPosition(move[i].to.row, move[i].to.column));
-        if((i+1) < countMove) printf(", ");
-    }
-    printf("]\n");
-    printf("Choise: ");
-    scanf("%s", choise);
-    fflush(stdin);
-}
-
-void printInvalidMove() {
-    clear();
-    printf("Invalid Moviment!\nPlease, insert a valid moviment.");
-    pause();
 }

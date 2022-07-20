@@ -1,21 +1,29 @@
-#ifndef BOARD_H_
-#define BOARD_H_
+#ifndef _BOARD_H
+#define _BOARD_H
 
-#include "piece.h"
-#include "position.h"
+#ifndef _PIECE_H
+    #include "piece.h"
+#endif
 
+#ifndef _POSITION_H
+    #include "position.h"
+#endif
+
+/**
+ * Board
+ * ======================================
+ * Piece *pieces[8][8] - Board of pieces;
+ * ======================================
+*/
 typedef struct {
-    Piece board[8][8];
+    Piece *pieces[8][8];
 }Board;
 
-typedef struct {
-    Position from;
-    Position to;
-}Move;
-
+// Create Function
 Board newBoard();
-int possibleMoves(Board board, Position position, Move** move, int countMove);
-int validMove(Board board, Move move);
-int selectMove(Position position, Move* move, int countMove);
+
+// Valid Functions
+int existPieceInPosition(Board board, Position pos);
+int colorPieceIsCurrent(Board board, Position pos, char currentPlayer);
 
 #endif

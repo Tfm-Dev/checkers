@@ -1,18 +1,22 @@
-#ifndef GUI_H_
-#define GUI_H_
+#ifndef _GUI_H
+#define _GUI_H
 
-#include "game.h"
-#include "board.h"
+#ifndef _BOARD_H
+    #include "board.h"
+#endif
 
-void menu(int* choise);
-void printState(Game gameState, char* choise);
-void printBoard(Board board);
-void load();
-void instruction();
-void winner(char winner);
-void draw();
-void printInvalidPosition();
-void printMove(Game game, Move* move, int countMove, char* choise);
-void printInvalidMove();
+#ifndef _MOVE_H
+    #include "move.h"
+#endif
+
+// Choise functions
+int menu();
+void printState(Board board, int turn, char currentPlayer, char *choise);
+void printMove(Board board, Move move, char *choise);
+
+// Print functions
+void printBoard(Board board, Move *move);
+void printWinner(char winner);
+void printDraw();
 
 #endif

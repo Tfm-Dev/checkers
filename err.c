@@ -8,7 +8,7 @@
     #include <stdlib.h>
 #endif
 
-#ifndef _CONSTANTS_H
+#ifndef _CONSTANTS_H_
     #include "constants.h"
 #endif
 

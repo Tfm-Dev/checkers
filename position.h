@@ -1,5 +1,5 @@
-#ifndef _POSITION_H
-#define _POSITION_H
+#ifndef _POSITION_H_
+#define _POSITION_H_
 
 /**
  * Position

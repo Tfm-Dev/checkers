@@ -4,7 +4,7 @@
     #include <stdlib.h>
 #endif
 
-#ifndef _ERR_H
+#ifndef _ERR_H_
     #include "err.h"
 #endif
 

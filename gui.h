@@ -1,11 +1,11 @@
-#ifndef _GUI_H
-#define _GUI_H
+#ifndef _GUI_H_
+#define _GUI_H_
 
-#ifndef _BOARD_H
+#ifndef _BOARD_H_
     #include "board.h"
 #endif
 
-#ifndef _MOVE_H
+#ifndef _MOVE_H_
     #include "move.h"
 #endif
 

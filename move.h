@@ -5,7 +5,7 @@
     #include "position.h"
 #endif
 
-#ifndef _BOARD_H
+#ifndef _BOARD_H_
     #include "board.h"
 #endif
 
@@ -21,12 +21,13 @@ typedef struct{
 
 // Functions with return Move 
 Move newMove();
-Move possibleMoves(Position from, Board board);
+Move possibleMoves(Board board, Position from);
 
 // Functions with board return
-Board makeMove(Board board, Position from, Position to) ;
+Board makeMove(Board board, Position from, Position to);
 
 // Valid Functions
 int existsMove(Move move);
+int possibleCapture(Board board, Position from);
 
 #endif

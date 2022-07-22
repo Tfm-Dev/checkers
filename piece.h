@@ -1,5 +1,5 @@
-#ifndef _PIECE_H
-#define _PIECE_H
+#ifndef _PIECE_H_
+#define _PIECE_H_
 
 /**
  * Piece

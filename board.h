@@ -1,11 +1,11 @@
-#ifndef _BOARD_H
-#define _BOARD_H
+#ifndef _BOARD_H_
+#define _BOARD_H_
 
-#ifndef _PIECE_H
+#ifndef _PIECE_H_
     #include "piece.h"
 #endif
 
-#ifndef _POSITION_H
+#ifndef _POSITION_H_
     #include "position.h"
 #endif
 

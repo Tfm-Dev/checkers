@@ -4,7 +4,7 @@
     #include <stdlib.h>
 #endif
 
-#ifndef _ERR_H
+#ifndef _ERR_H_
     #include "err.h"
 #endif
 
@@ -35,26 +35,73 @@ Move newMove() {
  * 
  * @return All possible moves of piece;
 */
-Move possibleMoves(Position from, Board board) {
+Move possibleMoves(Board board, Position from) {
     Move move = newMove();
 
     if (board.pieces[from.row][from.column]->color == 'W') {
-        if (validPosition((from.row - 1), (from.column - 1)) && !board.pieces[from.row - 1][from.column - 1]) {
-            Position pos = newPosition((from.row - 1), (from.column - 1));
-            move.board[pos.row][pos.column] = 1;
-        }
-        if (validPosition((from.row - 1), (from.column + 1)) && !board.pieces[from.row - 1][from.column + 1]) {
-            Position pos = newPosition((from.row - 1), (from.column + 1));
-            move.board[pos.row][pos.column] = 1;
+        if (!possibleCapture(board, from)) {
+            if (validPosition((from.row - 1), (from.column - 1)) && !board.pieces[from.row - 1][from.column - 1]) {
+                Position pos = newPosition((from.row - 1), (from.column - 1));
+                move.board[pos.row][pos.column] = 1;
+            }
+            if (validPosition((from.row - 1), (from.column + 1)) && !board.pieces[from.row - 1][from.column + 1]) {
+                Position pos = newPosition((from.row - 1), (from.column + 1));
+                move.board[pos.row][pos.column] = 1;
+            }
+        } else {
+            if (
+                validPosition((from.row - 1), (from.column - 1)) && 
+                board.pieces[from.row - 1][from.column - 1] && 
+                board.pieces[from.row - 1][from.column - 1]->color == 'B' && 
+                validPosition((from.row - 2), (from.column - 2)) &&
+                !board.pieces[from.row - 2][from.column - 2]
+                ) {
+                    Position pos = newPosition((from.row - 2), (from.column - 2));
+                    move.board[pos.row][pos.column] = 1;
+            }
+            if (
+                validPosition((from.row - 1), (from.column + 1)) && 
+                board.pieces[from.row - 1][from.column + 1] && 
+                board.pieces[from.row - 1][from.column + 1]->color == 'B' && 
+                validPosition((from.row - 2), (from.column + 2)) &&
+                !board.pieces[from.row - 2][from.column + 2]
+                ) {
+                    Position pos = newPosition((from.row - 2), (from.column + 2));
+                    move.board[pos.row][pos.column] = 1;
+            }
         }
     } else {
-        if (validPosition((from.row + 1), (from.column - 1)) && !board.pieces[from.row + 1][from.column - 1]) {
-            Position pos = newPosition((from.row + 1), (from.column - 1));
-            move.board[pos.row][pos.column] = 1;
-        }
-        if (validPosition((from.row + 1), (from.column + 1)) && !board.pieces[from.row + 1][from.column + 1]) {
-            Position pos = newPosition((from.row + 1), (from.column + 1));
-            move.board[pos.row][pos.column] = 1;
+        if (!possibleCapture(board, from)) {
+            if (validPosition((from.row + 1), (from.column - 1)) && !board.pieces[from.row + 1][from.column - 1]) {
+                Position pos = newPosition((from.row + 1), (from.column - 1));
+                move.board[pos.row][pos.column] = 1;
+            }
+            if (validPosition((from.row + 1), (from.column + 1)) && !board.pieces[from.row + 1][from.column + 1]) {
+                Position pos = newPosition((from.row + 1), (from.column + 1));
+                move.board[pos.row][pos.column] = 1;
+            }
+        } else {
+            if (
+                validPosition((from.row + 1), (from.column - 1)) && 
+                board.pieces[from.row + 1][from.column - 1] && 
+                board.pieces[from.row + 1][from.column - 1]->color == 'W' && 
+                validPosition((from.row + 2), (from.column - 2)) &&
+                !board.pieces[from.row + 2][from.column - 2]
+                ) {
+                    Position pos = newPosition((from.row + 2), (from.column - 2));
+                    move.board[pos.row][pos.column] = 1;
+            }
+            if (
+                validPosition((from.row + 1), (from.column + 1)) && 
+                board.pieces[from.row + 1][from.column + 1] && 
+                board.pieces[from.row + 1][from.column + 1]->color == 'W' && 
+                validPosition((from.row + 2), (from.column + 2)) &&
+                !board.pieces[from.row + 2][from.column + 2]
+                ) {
+                    Position pos = newPosition((from.row + 2), (from.column + 2));
+                    move.board[pos.row][pos.column] = 1;
+            
+            }
         }
     }
 
@@ -78,6 +125,20 @@ Board makeMove(Board board, Position from, Position to) {
     new.pieces[from.row][from.column] = NULL;
     new.pieces[to.row][to.column] = temp;
 
+    if (from.row > to.row && (to.row + 1) != from.row) {
+        if (from.column > to.column) {
+            new.pieces[to.row + 1][to.column + 1] = NULL;
+        } else {
+            new.pieces[to.row + 1][to.column - 1] = NULL;
+        }
+    } else if (from.row < to.row && (to.row - 1) != from.row) {
+        if (from.column > to.column) {
+            new.pieces[to.row - 1][to.column + 1] = NULL;
+        } else {
+            new.pieces[to.row - 1][to.column - 1] = NULL;
+        }
+    }
+
     return new;
 }
 
@@ -90,5 +151,57 @@ Board makeMove(Board board, Position from, Position to) {
 */
 int existsMove(Move move) {
     for (int i = 0; i < 8; i++) for(int j = 0; j < 8; j++) if (move.board[i][j]) return 1;
+    return 0;
+}
+
+/**
+ * Verify if exist possible capture.
+ * 
+ * @param board  Board of game;
+ * @param from   Origin position.
+ * 
+ * @return True(1) or False(0)
+*/
+int possibleCapture(Board board, Position from) {
+    if (board.pieces[from.row][from.column]->color == 'W') {
+        if (
+            validPosition((from.row - 1), (from.column - 1)) && 
+            board.pieces[from.row - 1][from.column - 1] && 
+            board.pieces[from.row - 1][from.column - 1]->color == 'B' && 
+            validPosition((from.row - 2), (from.column - 2)) &&
+            !board.pieces[from.row - 2][from.column - 2]
+            ) {
+                return 1;
+        }
+        if (
+            validPosition((from.row - 1), (from.column + 1)) && 
+            board.pieces[from.row - 1][from.column + 1] && 
+            board.pieces[from.row - 1][from.column + 1]->color == 'B' && 
+            validPosition((from.row - 2), (from.column + 2)) &&
+            !board.pieces[from.row - 2][from.column + 2]
+            ) {
+                return 1;
+        }
+    } else {
+        if (
+            validPosition((from.row + 1), (from.column - 1)) && 
+            board.pieces[from.row + 1][from.column - 1] && 
+            board.pieces[from.row + 1][from.column - 1]->color == 'W' && 
+            validPosition((from.row + 2), (from.column - 2)) &&
+            !board.pieces[from.row + 2][from.column - 2]
+            ) {
+                return 1;
+        }
+        if (
+            validPosition((from.row + 1), (from.column + 1)) && 
+            board.pieces[from.row + 1][from.column + 1] && 
+            board.pieces[from.row + 1][from.column + 1]->color == 'W' && 
+            validPosition((from.row + 2), (from.column + 2)) &&
+            !board.pieces[from.row + 2][from.column + 2]
+            ) {
+                return 1;
+        }
+    }
+
     return 0;
 }

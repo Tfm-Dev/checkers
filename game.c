@@ -4,45 +4,47 @@
     #include <stdlib.h>
 #endif
 
-#ifndef _BOARD_H
+#ifndef _BOARD_H_
     #include "board.h"
 #endif
 
-#ifndef _GUI_H 
+#ifndef _GUI_H_
     #include "gui.h"
 #endif
 
-#ifndef _POSITION_H
+#ifndef _POSITION_H_
     #include "position.h"
 #endif
 
-#ifndef _MOVE_H
+#ifndef _MOVE_H_
     #include "move.h"
 #endif
 
-#ifndef _ERR_H
+#ifndef _ERR_H_
     #include "err.h"
 #endif
 
 /**
  * Game State
- * ==============================================
+ * ============================================================
  * int turn - Current turn of game;
  * char currentPlayer - Current player of game;
+ * int movesWithoutCaptureOrPromotion - Count moves without Capture or Promotion (Draw);
  * Board board - the Board of game;
  * struct GameState* next - Next Game State.
- * ==============================================
+ * ============================================================
 */
 struct GameState{
     int turn;
     char currentPlayer;
+    int movesWithoutCaptureOrPromotion;
     Board board;
     struct GameState* next;
 };
 
 void startGame();
-struct GameState *newGameState(int turn, char currentPlayer, Board board);
-struct GameState *insertGameState(struct GameState *gameState, int turn, char currentPlayer, Board board);
+struct GameState *newGameState(int turn, char currentPlayer, int movesWithoutCaptureOrPromotion, Board board);
+struct GameState *insertGameState(struct GameState *gameState, int turn, char currentPlayer, int movesWithoutCaptureOrPromotion, Board board);
 struct GameState *currentGameState(struct GameState *gameState);
 int finishGame();
 
@@ -82,10 +84,10 @@ void startGame() {
     struct GameState *gameState, *current;
     char *choise = (char*) malloc(sizeof(char) * 2);
 
-    current = gameState = newGameState(1, 'W', newBoard());
+    current = gameState = newGameState(1, 'W', 0, newBoard());
 
     // Game loop
-    while(!finishGame()) {
+    while(!finishGame(current->board, current->movesWithoutCaptureOrPromotion)) {
         printState(current->board, current->turn, current->currentPlayer, choise);
 
         // Valid Position
@@ -110,7 +112,7 @@ void startGame() {
         }
 
         // Get all possible moves
-        Move move = possibleMoves(from, current->board);
+        Move move = possibleMoves(current->board, from);
 
         // Valid if exists possible move
         if (!existsMove(move)) {
@@ -143,17 +145,20 @@ void startGame() {
         } while(1);
 
         // Save moviment
-        gameState = insertGameState(gameState, (current->turn + 1), current->currentPlayer == 'W' ? 'B' : 'W', makeMove(current->board, from, to));
+        gameState = insertGameState(gameState, (current->turn + 1), current->currentPlayer == 'W' ? 'B' : 'W', 0, makeMove(current->board, from, to));
 
         // Update Game State current
         current = currentGameState(gameState);
     }
+
+    // winOrDraw() ? printWinner(getWinner()) : printDraw();
 
     // Free memory
     current = gameState;
 
     while (current != NULL) {
         gameState = current->next;
+        for (int i = 0; i < 8; i++) for (int j = 0; j < 8; j++) free(current->board.pieces[i][j]);
         free(current);
         current = gameState;
     }
@@ -168,13 +173,14 @@ void startGame() {
  * 
  * @return GameState pointer.
 */
-struct GameState *newGameState(int turn, char currentPlayer, Board board) {
+struct GameState *newGameState(int turn, char currentPlayer, int movesWithoutCaptureOrPromotion, Board board) {
     struct GameState *gameState = (struct GameState *) malloc(sizeof(struct GameState));
 
     if(!gameState) memoryErr();
 
     gameState->turn = turn;
     gameState->currentPlayer = currentPlayer;
+    gameState->movesWithoutCaptureOrPromotion = movesWithoutCaptureOrPromotion;
     gameState->board = board;
     gameState->next = NULL;
 
@@ -191,10 +197,10 @@ struct GameState *newGameState(int turn, char currentPlayer, Board board) {
  * 
  * @return GameState pointer.
 */
-struct GameState *insertGameState(struct GameState *gameState, int turn, char currentPlayer, Board board) {   
-    if (gameState == NULL) return newGameState(turn, currentPlayer, board);
+struct GameState *insertGameState(struct GameState *gameState, int turn, char currentPlayer, int movesWithoutCaptureOrPromotion, Board board) {   
+    if (gameState == NULL) return newGameState(turn, currentPlayer, movesWithoutCaptureOrPromotion, board);
 
-    gameState->next = insertGameState(gameState->next, turn, currentPlayer, board);
+    gameState->next = insertGameState(gameState->next, turn, currentPlayer, movesWithoutCaptureOrPromotion, board);
 
     return gameState;
 }
@@ -216,6 +222,16 @@ struct GameState *currentGameState(struct GameState *gameState) {
  * 
  * @return True(1) or False(0).
 */
-int finishGame() {
+int finishGame(Board board, int movesWithoutCaptureOrPromotion) {
+    int white, black;
+    white = black = 0;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (board.pieces[i][j] && board.pieces[i][j]->color == 'W') white += 1;
+            if (board.pieces[i][j] && board.pieces[i][j]->color == 'B') black += 1;
+        }
+    }
+    if (white == 0 || black == 0) return 1;
+    if (movesWithoutCaptureOrPromotion >= 40) return 1;
     return 0;
 }
